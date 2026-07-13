@@ -833,14 +833,14 @@ velocity:new THREE.Vector3(),
 
 mass:1450,
 
-engineForce:18500,
-brakeForce:26000,
-reverseForce:9500,
+engineForce:28000,
+brakeForce:30000,
+reverseForce:12000,
 
-drag:.38,
+drag:.30,
 
-frontGrip:10.5,
-rearGrip:8.5,
+frontGrip:12.5,
+rearGrip:10.5,
 
 angularVelocity:0,
 
@@ -1006,26 +1006,36 @@ acceleration*dt
 );
 
 /*
-    LOWER STEERING SENSITIVITY
+    ADJUSTED STEERING SENSITIVITY - MORE MEDIUM SPEED RESPONSE
 
-    Low speed:
+    Low speed (0 km/h):
         72% steering response
 
-    High speed:
+    Medium speed (30-50 km/h):
+        ~50-60% steering response (increased from ~30-40%)
+
+    High speed (85+ km/h):
         16% steering response
 
-    This prevents instant snapping.
+    This gives more control at medium speeds for drifting/cornering.
 */
 
 const speedAbs=
 Math.abs(forwardSpeed);
 
+/*
+    Custom steering curve for better medium-speed control:
+    - 0 km/h: 72%
+    - 30 km/h: ~58%
+    - 50 km/h: ~50%
+    - 85 km/h: 16%
+*/
 const speedSteerFactor=
 THREE.MathUtils.lerp(
 .72,
 .16,
 THREE.MathUtils.clamp(
-speedAbs/65,
+Math.pow(speedAbs/85, 0.65),
 0,
 1
 )
@@ -1186,7 +1196,7 @@ forwardSpeed>3
 
 physics.velocity.addScaledVector(
 forward,
-28*dt
+55*dt
 );
 
 nitro=
@@ -1210,8 +1220,8 @@ nitro+3*dt
 }
 
 const maxSpeed=
-92*surface.max+
-(keys["shift"]?25:0);
+135*surface.max+
+(keys["shift"]?45:0);
 
 if(
 physics.velocity.length()>
@@ -2189,9 +2199,9 @@ const COP_TYPES={
 
 patrol:{
 color:0xf5f5f5,
-maxSpeed:76,
-accel:25,
-turn:1.3,
+maxSpeed:95,
+accel:32,
+turn:1.4,
 hp:75,
 damage:12,
 mass:1500,
@@ -2200,9 +2210,9 @@ scale:1
 
 interceptor:{
 color:0x20252b,
-maxSpeed:100,
-accel:33,
-turn:1.55,
+maxSpeed:125,
+accel:42,
+turn:1.7,
 hp:60,
 damage:16,
 mass:1350,
@@ -2211,9 +2221,9 @@ scale:.95
 
 suv:{
 color:0x111820,
-maxSpeed:78,
-accel:22,
-turn:1.05,
+maxSpeed:98,
+accel:28,
+turn:1.15,
 hp:160,
 damage:26,
 mass:2400,
@@ -2222,9 +2232,9 @@ scale:1.2
 
 armored:{
 color:0x37474f,
-maxSpeed:70,
-accel:18,
-turn:.85,
+maxSpeed:88,
+accel:23,
+turn:.95,
 hp:380,
 damage:40,
 mass:4200,
@@ -4189,7 +4199,7 @@ Math.max(
 Math.min(
 6,
 Math.floor(
-kmh/50
+kmh/65
 )+1
 )
 );
